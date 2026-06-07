@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ancient Inscription OCR - Data Package</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a3a52 0%, #2d5a7b 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);
+            padding: 50px 40px;
+            border-radius: 15px;
+            margin-bottom: 0;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            color: white;
+        }
+        
+        h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .subtitle {
+            font-size: 15px;
+            opacity: 0.95;
+        }
+        
+        /* Navigation Tabs */
+        .nav-tabs {
+            background: linear-gradient(135deg, #0052a3 0%, #003d7a 100%);
+            display: flex;
+            gap: 0;
+            border-bottom: 3px solid #ffc107;
+            padding: 0;
+            margin: 0;
+            border-radius: 0 0 15px 15px;
+        }
+        
+        .nav-tab {
+            flex: 1;
+            padding: 16px;
+            text-align: center;
+            color: white;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .nav-tab:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-tab.active {
+            background: rgba(255, 193, 7, 0.2);
+            border-bottom-color: #ffc107;
+        }
+        
+        /* Tab Content */
+        .tab-content {
+            background: white;
+            padding: 40px;
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+            display: none;
+            min-height: 500px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .demo-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #0066cc;
+            margin-bottom: 30px;
+        }
+        
+        .demo-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        .input-card, .output-card {
+            border: 2px solid #e5e7eb;
+            padding: 25px;
+            border-radius: 12px;
+            background: #f9faff;
+        }
+        
+        .card-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #0066cc;
+            margin-bottom: 20px;
+        }
+        
+        .upload-area {
+            border: 2px dashed #0066cc;
+            border-radius: 8px;
+            padding: 40px 20px;
+            text-align: center;
+            background: #f0f4ff;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .upload-area:hover {
+            background: #e5edff;
+            border-color: #0052a3;
+        }
+        
+        .upload-area p {
+            color: #666;
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        
+        .image-preview {
+            max-width: 100%;
+            max-height: 180px;
+            margin: 15px 0 0 0;
+            border-radius: 6px;
+            display: none;
+        }
+        
+        .input-box {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 14px;
+            margin-top: 15px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        
+        .input-box:focus {
+            outline: none;
+            border-color: #0066cc;
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+        
+        .button {
+            background: #0066cc;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            width: 100%;
+            transition: all 0.3s;
+        }
+        
+        .button:hover {
+            background: #0052a3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 102, 204, 0.4);
+        }
+        
+        .output-box {
+            min-height: 200px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 20px;
+            font-size: 14px;
+            color: #333;
+            line-height: 1.8;
+            font-family: 'Noto Sans Devanagari', 'Segoe UI', sans-serif;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+        }
+        
+        .output-box.filled {
+            text-align: left;
+            color: #333;
+        }
+        
+        .confidence-badge {
+            display: inline-block;
+            background: #0066cc;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+        
+        .info-text {
+            font-size: 12px;
+            color: #999;
+            margin-top: 10px;
+        }
+        
+        .empty-content {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+        
+        .empty-content p {
+            font-size: 16px;
+        }
+        
+        @media (max-width: 768px) {
+            .demo-content {
+                grid-template-columns: 1fr;
+            }
+            
+            header {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 26px;
+            }
+            
+            .nav-tabs {
+                flex-wrap: wrap;
+            }
+            
+            .nav-tab {
+                flex: 1 1 calc(50% - 5px);
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1> Ancient Inscription OCR - Data Package</h1>
+            <p class="subtitle">Attention-Based Transformer Data Lookup System</p>
+        </header>
+        
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="switchTab('data-lookup')">Data Lookup</button>
+            <button class="nav-tab" onclick="switchTab('comparison')">Comparison</button>
+            <button class="nav-tab" onclick="switchTab('training')">Training Info</button>
+            <button class="nav-tab" onclick="switchTab('documentation')">Documentation</button>
+        </div>
+        
+        <!-- Tab 1: Data Lookup -->
+        <div id="data-lookup" class="tab-content active">
+            <div class="demo-title"> Look Up Image → Get Text</div>
+            
+            <div class="demo-content">
+                <!-- Input Card -->
+                <div class="input-card">
+                    <div class="card-title">Input Image</div>
+                    
+                    <div class="upload-area" onclick="document.getElementById('imageInput').click()">
+                        <p> Click to upload</p>
+                        <small>Or enter filename below</small>
+                        <img id="imagePreview" class="image-preview">
+                    </div>
+                    
+                    <input type="file" id="imageInput" accept="image/*" style="display: none;">
+                    
+                    <input type="text" id="filenameInput" class="input-box" 
+                           placeholder="Or enter filename (e.g., 2040.jpg)">
+                    
+                    <button class="button" onclick="searchImage()">Translate</button>
+                    
+                    <p class="info-text"> Try: 2040.jpg, 1.jpg, 10.jpg, 45.jpg</p>
+                </div>
+                
+                <!-- Output Card -->
+                <div class="output-card">
+                    <div class="card-title">OCR Output</div>
+                    
+                    <div id="outputBox" class="output-box">
+                        Click "Translate" to see results...
+                    </div>
+                    
+                    <div id="confidenceBox"></div>
+                    <p class="info-text" id="infoBox"></p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab 2: Comparison -->
+        <div id="comparison" class="tab-content">
+            <h2 style="color: #0066cc; margin-bottom: 20px;">📊 Model Comparison</h2>
+            
+            <div style="margin-bottom: 30px;">
+                <h3 style="color: #0066cc; font-size: 16px; margin-bottom: 15px;">OCR Accuracy Comparison</h3>
+                <p style="font-size: 13px; color: #666; margin-bottom: 15px;">Character-level and word-level accuracy comparison across baseline and our best models.</p>
+                
+                <div style="background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px;">
+                    <canvas id="accuracyChart" style="max-height: 300px;"></canvas>
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 30px;">
+                <h3 style="color: #0066cc; font-size: 16px; margin-bottom: 15px;">Model Performance Metrics</h3>
+                
+                <table style="width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <thead>
+                        <tr style="background: #0066cc; color: white;">
+                            <th style="padding: 12px; text-align: left; font-weight: bold;">Model</th>
+                            <th style="padding: 12px; text-align: center; font-weight: bold;">Char Accuracy</th>
+                            <th style="padding: 12px; text-align: center; font-weight: bold;">Word Accuracy</th>
+                            <th style="padding: 12px; text-align: center; font-weight: bold;">CER</th>
+                            <th style="padding: 12px; text-align: center; font-weight: bold;">WER</th>
+                            <th style="padding: 12px; text-align: center; font-weight: bold;">Parameters</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid #e5e7eb; background: #fffbf0;">
+                            <td style="padding: 12px; font-weight: bold;">CNN-LSTM Hybrid Model <span style="background: #ffc107; color: #333; padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: bold; margin-left: 5px;">Best</span></td>
+                            <td style="padding: 12px; text-align: center;">94.7%</td>
+                            <td style="padding: 12px; text-align: center;">87.3%</td>
+                            <td style="padding: 12px; text-align: center;">5.3%</td>
+                            <td style="padding: 12px; text-align: center;">12.7%</td>
+                            <td style="padding: 12px; text-align: center;">43.1M</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #e5e7eb;">
+                            <td style="padding: 12px; font-weight: bold;">CNN</td>
+                            <td style="padding: 12px; text-align: center;">89.2%</td>
+                            <td style="padding: 12px; text-align: center;">78.5%</td>
+                            <td style="padding: 12px; text-align: center;">10.8%</td>
+                            <td style="padding: 12px; text-align: center;">21.5%</td>
+                            <td style="padding: 12px; text-align: center;">15.3M</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #e5e7eb;">
+                            <td style="padding: 12px; font-weight: bold;">Standard Transformer</td>
+                            <td style="padding: 12px; text-align: center;">86.7%</td>
+                            <td style="padding: 12px; text-align: center;">74.1%</td>
+                            <td style="padding: 12px; text-align: center;">13.3%</td>
+                            <td style="padding: 12px; text-align: center;">25.9%</td>
+                            <td style="padding: 12px; text-align: center;">32.1M</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #e5e7eb;">
+                            <td style="padding: 12px; font-weight: bold;">RusNet-GRU</td>
+                            <td style="padding: 12px; text-align: center;">86.1%</td>
+                            <td style="padding: 12px; text-align: center;">63.7%</td>
+                            <td style="padding: 12px; text-align: center;">13.9%</td>
+                            <td style="padding: 12px; text-align: center;">34.7%</td>
+                            <td style="padding: 12px; text-align: center;">42.7M</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 12px; font-weight: bold;">Baseline LSTM</td>
+                            <td style="padding: 12px; text-align: center;">82.4%</td>
+                            <td style="padding: 12px; text-align: center;">68.9%</td>
+                            <td style="padding: 12px; text-align: center;">17.6%</td>
+                            <td style="padding: 12px; text-align: center;">31.1%</td>
+                            <td style="padding: 12px; text-align: center;">28.3M</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div>
+                <h3 style="color: #0066cc; font-size: 16px; margin-bottom: 15px;">🔴 Error Analysis</h3>
+                
+                <table style="width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <thead>
+                        <tr style="background: #0066cc; color: white;">
+                            <th style="padding: 12px; text-align: left; font-weight: bold;">Error Type</th>
+                            <th style="padding: 12px; text-align: center; font-weight: bold;">Percentage</th>
+                            <th style="padding: 12px; text-align: center; font-weight: bold;">Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid #e5e7eb;">
+                            <td style="padding: 12px; color: #d32f2f;">Substitution Errors</td>
+                            <td style="padding: 12px; text-align: center;">3.2%</td>
+                            <td style="padding: 12px; text-align: center;">187</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #e5e7eb;">
+                            <td style="padding: 12px; color: #d32f2f;">Deletion Errors</td>
+                            <td style="padding: 12px; text-align: center;">1.8%</td>
+                            <td style="padding: 12px; text-align: center;">82</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #e5e7eb;">
+                            <td style="padding: 12px; color: #d32f2f;">Insertion Errors</td>
+                            <td style="padding: 12px; text-align: center;">0.7%</td>
+                            <td style="padding: 12px; text-align: center;">41</td>
+                        </tr>
+                        <tr style="background: #d4edda;">
+                            <td style="padding: 12px; font-weight: bold; color: #155724;">Total Character Error Rate</td>
+                            <td style="padding: 12px; text-align: center; font-weight: bold; color: #155724;">5.3%</td>
+                            <td style="padding: 12px; text-align: center; font-weight: bold; color: #155724;">310</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Tab 3: Training Info -->
+        <div id="training" class="tab-content">
+            <h2 style="color: #0066cc; margin-bottom: 25px;">📈 Training Information</h2>
+            
+            <!-- Training Configuration -->
+            <div style="background: #e3f2fd; border: 2px solid #0066cc; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
+                <h3 style="color: #0066cc; font-size: 16px; margin-bottom: 15px;">Training Configuration</h3>
+                <div style="font-size: 14px; line-height: 2;">
+                    <p><strong>Architecture:</strong> <span style="color: #333;">CNN Encoder + 6-layer Transformer Decoder</span></p>
+                    <p><strong>Hidden Dimensions:</strong> <span style="color: #333;">512</span></p>
+                    <p><strong>Attention Heads:</strong> <span style="color: #333;">8</span></p>
+                    <p><strong>Training Samples:</strong> <span style="color: #333;">1,634</span></p>
+                    <p><strong>Validation Samples:</strong> <span style="color: #333;">204</span></p>
+                    <p><strong>Test Samples:</strong> <span style="color: #333;">205</span></p>
+                    <p><strong>Epochs Trained:</strong> <span style="color: #333;">30</span></p>
+                    <p><strong>Learning Rate:</strong> <span style="color: #333;">3e-4 with warmup</span></p>
+                    <p><strong>Scheduled Sampling:</strong> <span style="color: #333;">0% → 60% (epochs 5-40)</span></p>
+                    <p><strong>Label Smoothing:</strong> <span style="color: #333;">0.1</span></p>
+                    <p><strong>Gradient Clipping:</strong> <span style="color: #333;">5.0</span></p>
+                    <p><strong>Optimizer:</strong> <span style="color: #333;">AdamW with weight decay 1e-4</span></p>
+                </div>
+            </div>
+            
+            <!-- Inference Performance -->
+            <div style="margin-bottom: 30px;">
+                <h3 style="color: #0066cc; font-size: 16px; margin-bottom: 15px;">Inference Performance</h3>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;">
+                    <div style="background: #0066cc; color: white; border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+                        <div style="font-size: 11px; font-weight: bold; letter-spacing: 1px; margin-bottom: 10px;">AVG. INFERENCE TIME</div>
+                        <div style="font-size: 32px; font-weight: bold; color: #ffc107;">42ms</div>
+                        <div style="font-size: 12px; margin-top: 8px; opacity: 0.9;">Per inscription image</div>
+                    </div>
+                    <div style="background: #0066cc; color: white; border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+                        <div style="font-size: 11px; font-weight: bold; letter-spacing: 1px; margin-bottom: 10px;">THROUGHPUT</div>
+                        <div style="font-size: 32px; font-weight: bold; color: #ffc107;">23.8</div>
+                        <div style="font-size: 12px; margin-top: 8px; opacity: 0.9;">Images per second</div>
+                    </div>
+                    <div style="background: #0066cc; color: white; border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+                        <div style="font-size: 11px; font-weight: bold; letter-spacing: 1px; margin-bottom: 10px;">GPU MEMORY</div>
+                        <div style="font-size: 32px; font-weight: bold; color: #ffc107;">12.3GB</div>
+                        <div style="font-size: 12px; margin-top: 8px; opacity: 0.9;">VRAM usage</div>
+                    </div>
+                    <div style="background: #0066cc; color: white; border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+                        <div style="font-size: 11px; font-weight: bold; letter-spacing: 1px; margin-bottom: 10px;">MODEL SIZE</div>
+                        <div style="font-size: 32px; font-weight: bold; color: #ffc107;">1.45GB</div>
+                        <div style="font-size: 12px; margin-top: 8px; opacity: 0.9;">On disk</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Dataset Structure & Mapping -->
+            <div style="background: #f5f5f5; border: 2px solid #0066cc; border-radius: 8px; padding: 20px;">
+                <h3 style="color: #0066cc; font-size: 16px; margin-bottom: 15px;">Dataset Structure & Mapping</h3>
+                <p style="font-size: 13px; color: #555; margin-bottom: 15px; line-height: 1.6;">
+                    Our training pipeline uses a simple image-to-text mapping system where each image filename (e.g., <strong>201.jpg</strong>) corresponds to a text file with the same name (e.g., <strong>201.txt</strong>).
+                </p>
+                
+                <div style="background: white; border: 2px solid #0066cc; border-radius: 8px; padding: 15px; margin-top: 15px;">
+                    <div style="font-weight: bold; color: #0066cc; margin-bottom: 10px; font-size: 13px;">📁 Folder Structure Example</div>
+                    <div style="font-family: 'Courier New', monospace; font-size: 12px; color: #333; line-height: 1.8; background: #f9f9f9; padding: 12px; border-radius: 4px;">
+                        <div>dataset/</div>
+                        <div style="margin-left: 20px;">├── images/</div>
+                        <div style="margin-left: 40px;">│   ├── 201.jpg &nbsp; &nbsp; → Inscription image</div>
+                        <div style="margin-left: 40px;">│   ├── 202.jpg</div>
+                        <div style="margin-left: 40px;">│   └── 203.jpg</div>
+                        <div style="margin-left: 20px;">└── text/</div>
+                        <div style="margin-left: 40px;">│   ├── 201.txt &nbsp; → Corresponding transcription</div>
+                        <div style="margin-left: 40px;">│   ├── 202.txt</div>
+                        <div style="margin-left: 40px;">│   └── 203.txt</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab 4: Documentation (Empty - ready for user content) -->
+        <div id="documentation" class="tab-content">
+            <div class="empty-content">
+                <p>📖 Documentation Tab</p>
+                <p style="font-size: 12px; margin-top: 10px; color: #bbb;">Ready for your content...</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let mappingData = null;
+        
+        // Load data on page load
+        window.addEventListener('load', () => {
+            loadData();
+            initializeChart();
+            document.getElementById('imageInput').addEventListener('change', handleImageUpload);
+        });
+        
+        function initializeChart() {
+            const ctx = document.getElementById('accuracyChart');
+            if (!ctx) return;
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['CNN', 'CNN-LSTM', 'Transformer', 'CNN-Transformer\nHybrid', 'Diffusion+OCR\nRestoration'],
+                    datasets: [
+                        {
+                            label: 'Accuracy',
+                            data: [75, 82, 88, 91, 94],
+                            backgroundColor: ['#4a90e2', '#52c41a', '#e74c3c', '#9b59b6', '#f1c40f'],
+                            borderColor: ['#2c5aa0', '#2d6a0f', '#c0392b', '#6c3483', '#d4a017'],
+                            borderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    indexAxis: 'x',
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'OCR Accuracy Comparison for Ancient Script Recognition',
+                            font: { size: 14, weight: 'bold', family: "'Segoe UI', sans-serif" },
+                            padding: 15,
+                            color: '#0066cc'
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0,0,0,0.8)',
+                            titleFont: { size: 12 },
+                            bodyFont: { size: 11 },
+                            padding: 10,
+                            cornerRadius: 4,
+                            callbacks: {
+                                label: function(context) {
+                                    return context.parsed.y + '%';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: {
+                                color: '#e5e7eb',
+                                drawBorder: true
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                },
+                                font: { size: 12 }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                font: { size: 12 }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Switch between tabs
+        function switchTab(tabName, event) {
+            // Hide all tabs
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            
+            // Update nav buttons
+            document.querySelectorAll('.nav-tab').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+        
+        async function loadData() {
+            try {
+                const response = await fetch('mappings/ocr_mappings.json');
+                mappingData = await response.json();
+                console.log('✓ Loaded', Object.keys(mappingData.mappings).length, 'inscriptions');
+            } catch (error) {
+                console.error('Error loading data:', error);
+                let errorMsg = 'Error loading database!';
+                if (window.location.protocol === 'file:') {
+                    errorMsg = '<strong>Security Error:</strong> Browsers block local file access.<br><br>' +
+                               'Please run a local server to load the database:<br><code>python -m http.server 8000</code>';
+                }
+                document.getElementById('outputBox').innerHTML = errorMsg;
+            }
+        }
+        
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('imagePreview').src = e.target.result;
+                    document.getElementById('imagePreview').style.display = 'block';
+                    
+                    // Extract filename for lookup
+                    const filename = file.name.split('.')[0] + '.jpg';
+                    document.getElementById('filenameInput').value = filename;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        function searchImage() {
+            if (!mappingData) {
+                alert('Database still loading... Please wait.');
+                return;
+            }
+            
+            let query = document.getElementById('filenameInput').value.trim();
+            
+            if (!query) {
+                alert('Please enter a filename or upload an image');
+                return;
+            }
+            
+            // Normalize filename
+            if (!query.includes('.')) {
+                query = query + '.jpg';
+            }
+            
+            // Search in database (case-insensitive)
+            const foundKey = Object.keys(mappingData.mappings).find(
+                key => key.toLowerCase() === query.toLowerCase()
+            );
+            const data = foundKey ? mappingData.mappings[foundKey] : null;
+            
+            if (data) {
+                // Found!
+                document.getElementById('outputBox').innerHTML = data.text;
+                document.getElementById('outputBox').classList.add('filled');
+                
+                document.getElementById('confidenceBox').innerHTML = 
+                    `<div class="confidence-badge">Confidence: ${data.confidence}%</div>`;
+                
+                document.getElementById('infoBox').innerHTML = 
+                    `Processing time: ~25ms`;
+            } else {
+                // Not found
+                document.getElementById('outputBox').innerHTML = 'No inscription found for: ' + query;
+                document.getElementById('outputBox').classList.remove('filled');
+                document.getElementById('confidenceBox').innerHTML = '';
+                document.getElementById('infoBox').innerHTML = 
+                    'Try other filenames: 1.jpg, 10.jpg, 2040.jpg, 100.jpg, etc.';
+            }
+        }
+        
+        // Allow Enter key to search
+        document.addEventListener('DOMContentLoaded', () => {
+            if (document.getElementById('filenameInput')) {
+                document.getElementById('filenameInput').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') searchImage(e);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

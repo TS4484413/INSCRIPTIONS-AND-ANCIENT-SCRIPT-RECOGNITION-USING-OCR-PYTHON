@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCR Data Package - Quick Start</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);
+            padding: 40px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            color: white;
+        }
+        
+        h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .step-number {
+            display: inline-block;
+            background: #0066cc;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            font-weight: bold;
+            font-size: 18px;
+            margin-right: 15px;
+        }
+        
+        .step-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #0066cc;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .code-block {
+            background: #f3f4f6;
+            border-left: 4px solid #0066cc;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #333;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        
+        .output {
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+            margin: 15px 0;
+        }
+        
+        .status {
+            display: inline-block;
+            background: #10b981;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .description {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        
+        .button {
+            display: inline-block;
+            background: #0066cc;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+        
+        .button:hover {
+            background: #0052a3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 102, 204, 0.3);
+        }
+        
+        .success {
+            background: #d1fae5;
+            border-left: 4px solid #10b981;
+            padding: 15px;
+            border-radius: 6px;
+            color: #065f46;
+            margin: 15px 0;
+            font-weight: 500;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .feature {
+            background: linear-gradient(135deg, #f0f4ff 0%, #f9faff 100%);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #0066cc;
+        }
+        
+        .feature strong {
+            color: #0066cc;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        th {
+            background: #f3f4f6;
+            font-weight: bold;
+            color: #0066cc;
+        }
+        
+        tr:hover {
+            background: #f9faff;
+        }
+        
+        .footer {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            color: #666;
+            font-size: 13px;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 Quick Start Guide</h1>
+            <p class="subtitle">Ancient Inscriptions OCR - Data Package</p>
+        </header>
+        
+        <!-- Step 1 -->
+        <div class="card">
+            <div class="step-title">
+                <span class="step-number">1</span>
+                Start Server
+            </div>
+            <p class="description">Open a terminal and run this command:</p>
+            
+            <div class="code-block">cd "c:\Users\ANNAMAYA\Desktop\Computer Science\7th semester\Inscription Project\OCR_Data_Software_Package"<br>python -m http.server 8000</div>
+            
+            <p class="description">Expected output:</p>
+            <div class="output">Serving HTTP on 0.0.0.0 port 8000 (http://0.0.0.0:8000/) ...</div>
+            
+            <div class="success">✅ Status: Server is running!</div>
+        </div>
+        
+        <!-- Step 2 -->
+        <div class="card">
+            <div class="step-title">
+                <span class="step-number">2</span>
+                Open Browser
+            </div>
+            <p class="description">Click the button below or type in your address bar:</p>
+            
+            <div class="code-block">http://localhost:8000</div>
+            
+            <a href="http://localhost:8000" class="button" target="_blank">🌐 Open Dashboard</a>
+            
+            <p class="description" style="margin-top: 20px;">You should see:</p>
+            <ul style="margin-left: 20px; margin-top: 10px;">
+                <li>🏛️ Header: "Ancient Inscriptions OCR - Data Package"</li>
+                <li>📊 Statistics card with 2,043 inscriptions</li>
+                <li>📁 Available Formats (JSON, CSV, Python, TXT)</li>
+                <li>🚀 Quick Access links</li>
+                <li>Navigation tabs: Overview | Search | Formats | Documentation</li>
+            </ul>
+            
+            <div class="success">✅ Status: Dashboard is loading!</div>
+        </div>
+        
+        <!-- Step 3 -->
+        <div class="card">
+            <div class="step-title">
+                <span class="step-number">3</span>
+                Explore & Use
+            </div>
+            <p class="description">You can now:</p>
+            
+            <div class="grid">
+                <div class="feature">
+                    <strong>🔍 Search</strong><br>
+                    Find inscriptions by text
+                </div>
+                <div class="feature">
+                    <strong>📥 Download</strong><br>
+                    JSON, CSV, Python, TXT
+                </div>
+                <div class="feature">
+                    <strong>📖 Documentation</strong><br>
+                    Read guides and info
+                </div>
+                <div class="feature">
+                    <strong>🎲 Random</strong><br>
+                    Load random inscriptions
+                </div>
+            </div>
+            
+            <div class="success">✅ Status: Everything is working!</div>
+        </div>
+        
+        <!-- Summary -->
+        <div class="card">
+            <h2 style="color: #0066cc; margin-bottom: 15px;">🎉 That's It!</h2>
+            <p class="description">Your OCR Data Software Package is now:</p>
+            
+            <div style="background: #f0f4ff; padding: 20px; border-radius: 8px; border-left: 4px solid #0066cc;">
+                <p>✅ Live on <strong>http://localhost:8000</strong></p>
+                <p>✅ Ready to search <strong>2,043 inscriptions</strong></p>
+                <p>✅ Ready to download <strong>JSON, CSV, Python files</strong></p>
+                <p>✅ Fully functional and ready to use</p>
+            </div>
+        </div>
+        
+        <!-- Quick Reference -->
+        <div class="card">
+            <h2 style="color: #0066cc; margin-bottom: 15px;">📋 Navigation Guide</h2>
+            <table>
+                <tr>
+                    <th>Tab</th>
+                    <th>Purpose</th>
+                </tr>
+                <tr>
+                    <td><strong>📊 Overview</strong></td>
+                    <td>See statistics and quick links</td>
+                </tr>
+                <tr>
+                    <td><strong>🔍 Search</strong></td>
+                    <td>Find inscriptions by text</td>
+                </tr>
+                <tr>
+                    <td><strong>📁 Formats</strong></td>
+                    <td>Download in JSON, CSV, Python, or TXT</td>
+                </tr>
+                <tr>
+                    <td><strong>📖 Documentation</strong></td>
+                    <td>Read guides and documentation</td>
+                </tr>
+            </table>
+        </div>
+        
+        <!-- Stop Instructions -->
+        <div class="card">
+            <h2 style="color: #0066cc; margin-bottom: 15px;">⏹️ To Stop the Server</h2>
+            <p class="description">In the terminal where the server is running, press:</p>
+            <div class="code-block">Ctrl+C</div>
+            <p class="description">You'll see:</p>
+            <div class="output">KeyboardInterrupt</div>
+            <p class="description">Done! Server is stopped.</p>
+        </div>
+        
+        <div class="footer">
+            <p>✓ OCR Data Software Package v1.0 | Deployed: April 30, 2026 | Ready to Use</p>
+        </div>
+    </div>
+</body>
+</html>

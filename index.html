@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCR Data Software Package - Ancient Inscriptions</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);
+            padding: 40px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            color: white;
+        }
+        
+        h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.95;
+            margin-bottom: 15px;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            background: #10b981;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+        
+        nav {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        nav a {
+            color: #0066cc;
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 8px 0;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        nav a:hover, nav a.active {
+            color: #0052a3;
+            border-bottom-color: #0066cc;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #0066cc;
+            margin-bottom: 15px;
+            border-bottom: 3px solid #0066cc;
+            padding-bottom: 10px;
+        }
+        
+        .card-content {
+            line-height: 1.8;
+            color: #555;
+        }
+        
+        .card-content p {
+            margin-bottom: 10px;
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #0066cc;
+        }
+        
+        .stat-label {
+            font-size: 11px;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #0066cc;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .btn:hover {
+            background: #0052a3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 102, 204, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #d1d5db;
+            color: #000;
+        }
+        
+        .search-section {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .search-section h2 {
+            color: #0066cc;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 15px;
+            margin-bottom: 10px;
+            transition: border-color 0.3s;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #0066cc;
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+        
+        .search-results {
+            margin-top: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .result-item {
+            background: linear-gradient(135deg, #f0f4ff 0%, #f9faff 100%);
+            padding: 15px;
+            border-left: 4px solid #0066cc;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+        
+        .result-item:hover {
+            box-shadow: 0 4px 8px rgba(0, 102, 204, 0.15);
+        }
+        
+        .result-image {
+            font-weight: bold;
+            color: #0066cc;
+            font-size: 15px;
+        }
+        
+        .result-text {
+            color: #555;
+            margin-top: 8px;
+            font-size: 14px;
+            line-height: 1.6;
+            font-family: 'Noto Sans Devanagari', serif;
+        }
+        
+        .result-confidence {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+        
+        .footer {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            color: #666;
+            font-size: 13px;
+        }
+        
+        .loading {
+            display: none;
+            color: #0066cc;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            header {
+                padding: 25px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            nav {
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏛️ Ancient Inscriptions OCR - Data Package</h1>
+            <p class="subtitle">Complete Database | 2,043 Marathi Inscriptions | Devanagari Script | UTF-8 Encoded</p>
+            <span class="status-badge">✓ LIVE</span>
+        </header>
+        
+        <nav>
+            <a class="active" onclick="showTab('overview')">📊 Overview</a>
+            <a onclick="showTab('search')">🔍 Search</a>
+            <a onclick="showTab('formats')">📁 Formats</a>
+            <a onclick="showTab('docs')">📖 Documentation</a>
+        </nav>
+        
+        <div id="overview" class="tab-content">
+            <div class="grid">
+                <div class="card">
+                    <div class="card-title">📊 Statistics</div>
+                    <div class="card-content">
+                        <p><span class="stat-value">2,043</span><br><span class="stat-label">Total Inscriptions</span></p>
+                        <p><span class="stat-value">99.0%</span><br><span class="stat-label">Average Confidence</span></p>
+                        <p><span class="stat-value">875 KB</span><br><span class="stat-label">JSON Index Size</span></p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">📁 Available Formats</div>
+                    <div class="card-content">
+                        <p>✓ <strong>JSON</strong> (875 KB) - Complete mapping</p>
+                        <p>✓ <strong>CSV</strong> (698 KB) - Spreadsheet format</p>
+                        <p>✓ <strong>Python</strong> (855 KB) - Programmatic access</p>
+                        <p>✓ <strong>TXT</strong> (2,043 files) - Individual inscriptions</p>
+                        <div class="button-group">
+                            <a href="mappings/ocr_mappings.json" class="btn btn-secondary">📥 View JSON</a>
+                            <a href="mappings/ocr_mappings.csv" class="btn btn-secondary">📥 Download CSV</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">� Quick Access</div>
+                    <div class="card-content">
+                        <p>✓ Interactive search interface</p>
+                        <p>✓ Multiple export formats</p>
+                        <p>✓ Full documentation available</p>
+                        <p>✓ Command-line tools included</p>
+                        <div class="button-group">
+                            <a href="texts/2040.txt" class="btn btn-secondary">Sample (2040.txt)</a>
+                            <button onclick="loadRandomInscription()" class="btn btn-secondary">🎲 Random</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="search" class="tab-content" style="display:none;">
+            <div class="search-section">
+                <h2>🔍 Search Inscriptions</h2>
+                <input type="text" id="searchInput" class="search-input" placeholder="Search for text (e.g., चे गोत्र, पुरुश, etc.) or filename" onkeyup="searchInscriptions()">
+                <span class="loading" id="loading">⏳ Loading...</span>
+                <div class="search-results" id="searchResults"></div>
+            </div>
+        </div>
+        
+        <div id="formats" class="tab-content" style="display:none;">
+            <div class="grid">
+                <div class="card">
+                    <div class="card-title">📊 JSON Format</div>
+                    <div class="card-content">
+                        <p>Complete inscription database in JSON format</p>
+                        <p style="font-size: 12px; color: #999; margin-top: 10px;">File: <code>mappings/ocr_mappings.json</code></p>
+                        <p style="font-size: 12px; color: #999;">Size: 875 KB</p>
+                        <div class="button-group">
+                            <a href="mappings/ocr_mappings.json" class="btn">📥 Download JSON</a>
+                            <button onclick="previewJSON()" class="btn btn-secondary">👁️ Preview</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">📋 CSV Format</div>
+                    <div class="card-content">
+                        <p>Spreadsheet-compatible format for Excel, Google Sheets</p>
+                        <p style="font-size: 12px; color: #999; margin-top: 10px;">File: <code>mappings/ocr_mappings.csv</code></p>
+                        <p style="font-size: 12px; color: #999;">Size: 698 KB</p>
+                        <div class="button-group">
+                            <a href="mappings/ocr_mappings.csv" class="btn">📥 Download CSV</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">🐍 Python Module</div>
+                    <div class="card-content">
+                        <p>Import directly in Python for programmatic access</p>
+                        <p style="font-size: 12px; color: #999; margin-top: 10px;">File: <code>mappings/ocr_mappings.py</code></p>
+                        <p style="font-size: 12px; color: #999;">Size: 855 KB</p>
+                        <div class="button-group">
+                            <a href="mappings/ocr_mappings.py" class="btn">📥 Download Module</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="docs" class="tab-content" style="display:none;">
+            <div class="grid">
+                <div class="card">
+                    <div class="card-title">📖 Documentation</div>
+                    <div class="card-content">
+                        <p><a href="README.md" style="color: #0066cc; text-decoration: none;">📘 Full README</a></p>
+                        <p><a href="SUMMARY.md" style="color: #0066cc; text-decoration: none;">📊 Project Summary</a></p>
+                        <p><a href="DEPLOYMENT.md" style="color: #0066cc; text-decoration: none;">🚀 Deployment Guide</a></p>
+                        <p><a href="DEPLOYMENT_STATUS.md" style="color: #0066cc; text-decoration: none;">✅ Status Report</a></p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">💻 Tools & Utilities</div>
+                    <div class="card-content">
+                        <p><strong>Search Tool:</strong> Find inscriptions by text</p>
+                        <p style="font-size: 12px; color: #999;">Command: <code>python tools/search_inscriptions.py "query"</code></p>
+                        <p style="margin-top: 15px;"><strong>Data Generator:</strong> Regenerate mappings</p>
+                        <p style="font-size: 12px; color: #999;">Command: <code>python tools/generate_data_mapping.py</code></p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">🔗 Integration</div>
+                    <div class="card-content">
+                        <p><strong>Python Import:</strong></p>
+                        <p style="font-size: 12px; color: #999; font-family: monospace; background: #f3f4f6; padding: 8px; border-radius: 4px;">import json<br>data = json.load(open('mappings/ocr_mappings.json'))</p>
+                        <p style="margin-top: 10px;"><strong>REST API:</strong></p>
+                        <p style="font-size: 12px; color: #999;">Available via localhost:8000</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>✓ OCR Data Software Package v1.0 | Deployed: April 30, 2026 | UTF-8 Encoded | Marathi/Devanagari Script</p>
+        </div>
+    </div>
+    
+    <script>
+        let mappingData = null;
+        let searchCache = null;
+        
+        // Load mapping on page load
+        window.addEventListener('load', () => {
+            loadMappings();
+        });
+        
+        function showTab(tabName) {
+            // Hide all tabs
+            const tabs = document.querySelectorAll('[id^="overview"], [id^="search"], [id^="formats"], [id^="docs"]');
+            tabs.forEach(tab => {
+                if (tab.id === tabName) {
+                    tab.style.display = 'block';
+                } else {
+                    tab.style.display = 'none';
+                }
+            });
+            
+            // Update nav active state
+            document.querySelectorAll('nav a').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+        
+        async function loadMappings() {
+            try {
+                const response = await fetch('mappings/ocr_mappings.json');
+                mappingData = await response.json();
+                console.log('✓ Loaded', Object.keys(mappingData.mappings).length, 'inscriptions');
+            } catch (error) {
+                console.error('Error loading mappings:', error);
+                document.getElementById('searchInput').disabled = true;
+            }
+        }
+        
+        function searchInscriptions() {
+            const query = document.getElementById('searchInput').value.trim();
+            const resultsDiv = document.getElementById('searchResults');
+            
+            if (!query) {
+                resultsDiv.innerHTML = '';
+                return;
+            }
+            
+            if (!mappingData) {
+                resultsDiv.innerHTML = '<p style="color: #999;">Loading data...</p>';
+                return;
+            }
+            
+            // Search in mappings
+            const results = [];
+            const mappings = mappingData.mappings;
+            
+            for (const [filename, data] of Object.entries(mappings)) {
+                if (data.text.toLowerCase().includes(query.toLowerCase()) || 
+                    data.text.includes(query) ||
+                    filename.includes(query)) {
+                    results.push({
+                        filename: filename,
+                        text: data.text,
+                        confidence: data.confidence
+                    });
+                    
+                    if (results.length >= 15) break; // Limit results
+                }
+            }
+            
+            // Display results
+            if (results.length === 0) {
+                resultsDiv.innerHTML = '<p style="color: #999; padding: 20px;">No results found for: "<strong>' + escapeHtml(query) + '</strong>"</p>';
+                return;
+            }
+            
+            resultsDiv.innerHTML = '<p style="color: #0066cc; font-weight: bold; margin-bottom: 10px;">Found ' + results.length + ' result(s):</p>' + results.map((result, index) => `
+                <div class="result-item">
+                    <div class="result-image">#${index + 1} - ${result.filename}</div>
+                    <div class="result-confidence">Confidence: ${result.confidence}%</div>
+                    <div class="result-text">${escapeHtml(result.text)}</div>
+                    <a href="texts/${result.filename.replace('.jpg', '.txt')}" style="color: #0066cc; text-decoration: none; font-size: 12px; margin-top: 8px; display: inline-block;">📄 View Full Text →</a>
+                </div>
+            `).join('');
+        }
+        
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+        
+        async function loadRandomInscription() {
+            if (!mappingData) {
+                alert('Data not loaded yet');
+                return;
+            }
+            
+            const filenames = Object.keys(mappingData.mappings);
+            const randomFilename = filenames[Math.floor(Math.random() * filenames.length)];
+            const randomNumber = randomFilename.replace('.jpg', '');
+            
+            window.location.href = `texts/${randomNumber}.txt`;
+        }
+        
+        function previewJSON() {
+            alert('Opening JSON preview... Check the browser console for full data or download the file.');
+            fetch('mappings/ocr_mappings.json')
+                .then(r => r.json())
+                .then(data => {
+                    console.log('Full OCR Data:', data);
+                    console.log('Total inscriptions:', Object.keys(data.mappings).length);
+                    alert('JSON data loaded! Check browser console (F12) for preview.');
+                })
+                .catch(err => alert('Error: ' + err));
+        }
+    </script>
+</body>
+</html>
